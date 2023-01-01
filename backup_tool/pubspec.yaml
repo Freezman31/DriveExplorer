@@ -18,3 +18,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+  - family: Work Sans
+    fonts:
+      - asset: assets/fonts/WorkSans.ttf
+      - asset: assets/fonts/WorkSans-Italic.ttf
+        style: italic
