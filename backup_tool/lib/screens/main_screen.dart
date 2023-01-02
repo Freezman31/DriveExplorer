@@ -1,3 +1,4 @@
+import 'package:backup_tool/components/sidebar.dart';
 import 'package:backup_tool/utils.dart';
 import 'package:flutter/material.dart';
 
@@ -26,10 +27,9 @@ class _MainScreenState extends State<MainScreen> {
                   ? SizedBox(
                       width: 350,
                       height: size.height,
-                      child: Container(color: theme.colorScheme.surface),
+                      child: const SideBar(),
                     )
-                  : Expanded(
-                      child: Container(color: theme.colorScheme.surface)),
+                  : const Expanded(child: SideBar()),
           Expanded(
             flex: 3,
             child: Container(color: theme.colorScheme.background),
