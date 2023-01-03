@@ -2,8 +2,9 @@ import 'package:backup_tool/components/sidebar_item.dart';
 import 'package:flutter/material.dart';
 
 class SideBar extends StatefulWidget {
-  const SideBar({super.key});
+  const SideBar({super.key, required this.isSmall});
 
+  final bool isSmall;
   final List<SideBarItem> items = const [
     SideBarItem(title: 'Home', icon: Icons.home_filled, route: '/'),
   ];
@@ -29,9 +30,9 @@ class _SideBarState extends State<SideBar> {
                       color: Color(0xFF3b3170),
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    child: getListTile(index, theme, context),
+                    child: getListTile(index, theme, context, widget.isSmall),
                   )
-                : getListTile(index, theme, context);
+                : getListTile(index, theme, context, widget.isSmall);
           },
           itemCount: widget.items.length,
         ),
@@ -39,22 +40,33 @@ class _SideBarState extends State<SideBar> {
     );
   }
 
-  ListTile getListTile(int index, ThemeData theme, BuildContext context) {
-    return ListTile(
-      title: Text(widget.items[index].title,
-          style: theme.textTheme.labelMedium!
-              .copyWith(color: theme.colorScheme.onSurface)),
-      leading: Icon(
-        widget.items[index].icon,
-        color: theme.colorScheme.onSurface,
-      ),
-      selected: selected == index,
-      onTap: () {
-        setState(() {
-          selected = index;
-        });
-        Navigator.pushNamed(context, widget.items[index].route);
-      },
-    );
+  Widget getListTile(
+      int index, ThemeData theme, BuildContext context, bool iconOnly) {
+    return iconOnly
+        ? Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: Icon(
+              widget.items[index].icon,
+              color: theme.colorScheme.onSurface,
+            ),
+          )
+        : ListTile(
+            title: Text(
+              widget.items[index].title,
+              style: theme.textTheme.labelMedium!
+                  .copyWith(color: theme.colorScheme.onSurface),
+            ),
+            leading: Icon(
+              widget.items[index].icon,
+              color: theme.colorScheme.onSurface,
+            ),
+            selected: selected == index,
+            onTap: () {
+              setState(() {
+                selected = index;
+              });
+              Navigator.pushNamed(context, widget.items[index].route);
+            },
+          );
   }
 }

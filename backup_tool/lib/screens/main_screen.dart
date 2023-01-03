@@ -21,15 +21,18 @@ class _MainScreenState extends State<MainScreen> {
               ? SizedBox(
                   width: 75,
                   height: size.height,
-                  child: Container(color: theme.colorScheme.surface),
+                  child: const SideBar(isSmall: true),
                 )
               : isWidthLarge(size)
                   ? SizedBox(
                       width: 350,
                       height: size.height,
-                      child: const SideBar(),
+                      child: const SideBar(isSmall: false),
                     )
-                  : const Expanded(child: SideBar()),
+                  : const Expanded(
+                      child: SideBar(
+                      isSmall: false,
+                    )),
           Expanded(
             flex: 3,
             child: Container(color: theme.colorScheme.background),
