@@ -1,3 +1,3 @@
-# BackupTool
+# DriveExplorer
 
-A simple project (WIP) made with flutter and rust
+A simple project (yet) made with Flutter, with the objective to create another google driver desktop explorer
