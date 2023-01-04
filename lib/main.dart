@@ -1,5 +1,8 @@
+import 'package:backup_tool/api/drive.dart';
 import 'package:backup_tool/screens/main_screen.dart';
 import 'package:flutter/material.dart';
+
+final apiManager = GoogleDriveApiManager();
 
 void main() {
   runApp(const BackupToolApp());

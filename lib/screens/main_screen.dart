@@ -1,4 +1,5 @@
 import 'package:backup_tool/components/sidebar.dart';
+import 'package:backup_tool/main.dart';
 import 'package:backup_tool/utils.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
+    apiManager.login();
     return Scaffold(
       body: Row(
         children: [
@@ -31,8 +33,9 @@ class _MainScreenState extends State<MainScreen> {
                     )
                   : const Expanded(
                       child: SideBar(
-                      isSmall: false,
-                    )),
+                        isSmall: false,
+                      ),
+                    ),
           Expanded(
             flex: 3,
             child: Container(color: theme.colorScheme.background),
