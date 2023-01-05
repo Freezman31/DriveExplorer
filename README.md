@@ -1,3 +1,4 @@
-# BackupTool
+# DriveExplorer
 
-A simple project (WIP) made with flutter and rust
+Yet another google drive desktop app <br/>
+Made in Flutter with :heart:
