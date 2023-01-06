@@ -29,10 +29,8 @@ class GoogleDriveApiManager {
     print("Storage left: ${storageTotal - storageUsed}");
 
     print("Getting subfolders size");
-    final subfolders = await getSubfoldersSize("root");
-    subfolders.forEach((key, value) {
-      print("$key: $value");
-    });
+    final subfolders = await getSubfoldersSize("root", '');
+    print(subfolders);
   }
 
   Future saveCredentials(AccessToken token, String refreshToken) async {
@@ -94,21 +92,68 @@ class GoogleDriveApiManager {
     api = DriveApi(authClient);
   }
 
-  Future<Map<String, int>> getSubfoldersSize(String folderId) async {
-    final ret = <String, int>{};
+  Future<List<Item>> getSubfoldersSize(
+      String folderId, String actualPath) async {
+    final ret = <Item>[];
     final files = await api.files.list(
       q: "'$folderId' in parents",
       spaces: 'drive',
       $fields: '*',
     );
-    int size = 0;
     for (final file in files.files!) {
       if (file.mimeType == _folderType) {
-        ret.addAll(await getSubfoldersSize(file.id!));
+        final sub =
+            await getSubfoldersSize(file.id!, '$actualPath/${file.name}');
+        ret.addAll(sub);
+        ret.add(
+          Item(
+            id: file.id!,
+            name: file.name!,
+            size: sub
+                .map((e) => e.size)
+                .reduce((value, element) => value + element),
+            subfolders: sub,
+            path: '$actualPath/${file.name!}',
+            type: ItemType.folder,
+          ),
+        );
         continue;
       }
-      ret.addAll({file.name!: int.parse(file.size!)});
+      ret.add(
+        Item(
+          id: file.id!,
+          name: file.name!,
+          size: int.parse(file.size!),
+          subfolders: [],
+          path: '$actualPath/${file.name!}',
+          type: ItemType.file,
+        ),
+      );
     }
     return ret;
   }
 }
+
+class Item {
+  final String id;
+  final String name;
+  final int size;
+  final String path;
+  final ItemType type;
+  final List<Item> subfolders;
+
+  Item(
+      {required this.id,
+      required this.name,
+      required this.size,
+      required this.subfolders,
+      required this.path,
+      required this.type});
+
+  @override
+  String toString() {
+    return 'Item(id: $id, name: $name, size: $size, path: $path, type: $type, subfolders: $subfolders)';
+  }
+}
+
+enum ItemType { folder, file }
