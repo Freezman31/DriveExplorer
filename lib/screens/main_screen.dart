@@ -1,3 +1,4 @@
+import 'package:backup_tool/api/drive.dart';
 import 'package:backup_tool/components/info_card.dart';
 import 'package:backup_tool/components/sidebar.dart';
 import 'package:backup_tool/main.dart';
@@ -31,6 +32,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           );
         } else {
+          final data = snapshot.data as List<Item>;
           return Scaffold(
             body: Row(
               children: [
@@ -56,8 +58,11 @@ class _MainScreenState extends State<MainScreen> {
                   child: Container(
                     color: theme.colorScheme.background,
                     child: Column(
-                      children: const [
-                        Expanded(child: InfoCard()),
+                      children: [
+                        Expanded(
+                            child: InfoCard(
+                          driveItems: data,
+                        )),
                       ],
                     ),
                   ),

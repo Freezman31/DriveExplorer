@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const _folderType = "application/vnd.google-apps.folder";
+const _shortcutType = "application/vnd.google-apps.shortcut";
 
 class GoogleDriveApiManager {
   final storage = const FlutterSecureStorage();
@@ -29,8 +30,9 @@ class GoogleDriveApiManager {
     print("Storage left: ${storageTotal - storageUsed}");
 
     print("Getting subfolders size");
-    final subfolders = await getSubfoldersSize("root", '');
+    final subfolders = await getSubfolders("root", '');
     print(subfolders);
+    return subfolders;
   }
 
   Future saveCredentials(AccessToken token, String refreshToken) async {
@@ -92,8 +94,7 @@ class GoogleDriveApiManager {
     api = DriveApi(authClient);
   }
 
-  Future<List<Item>> getSubfoldersSize(
-      String folderId, String actualPath) async {
+  Future<List<Item>> getSubfolders(String folderId, String actualPath) async {
     final ret = <Item>[];
     final files = await api.files.list(
       q: "'$folderId' in parents",
@@ -102,16 +103,17 @@ class GoogleDriveApiManager {
     );
     for (final file in files.files!) {
       if (file.mimeType == _folderType) {
-        final sub =
-            await getSubfoldersSize(file.id!, '$actualPath/${file.name}');
-        ret.addAll(sub);
+        final sub = await getSubfolders(file.id!, '$actualPath/${file.name}');
+        if (sub.isNotEmpty) ret.addAll(sub);
         ret.add(
           Item(
             id: file.id!,
             name: file.name!,
-            size: sub
-                .map((e) => e.size)
-                .reduce((value, element) => value + element),
+            size: sub.isEmpty
+                ? 0
+                : sub
+                    .map((e) => e.size)
+                    .reduce((value, element) => value + element),
             subfolders: sub,
             path: '$actualPath/${file.name!}',
             type: ItemType.folder,
@@ -119,6 +121,9 @@ class GoogleDriveApiManager {
         );
         continue;
       }
+      print(
+          'File: ${file.name}, size: ${file.size}, path: $actualPath, id: ${file.id}, type: ${file.mimeType}');
+      if (file.mimeType == _shortcutType) continue;
       ret.add(
         Item(
           id: file.id!,
@@ -131,6 +136,12 @@ class GoogleDriveApiManager {
       );
     }
     return ret;
+  }
+
+  Future<String> getFileName({required String fileId}) async {
+    final file = (await api.files.get(fileId,
+        $fields: '*', downloadOptions: DownloadOptions.metadata)) as File;
+    return file.name!;
   }
 }
 
@@ -154,6 +165,15 @@ class Item {
   String toString() {
     return 'Item(id: $id, name: $name, size: $size, path: $path, type: $type, subfolders: $subfolders)';
   }
+}
+
+class ItemData {
+  final String id;
+  final int size;
+  ItemData({required this.id, required this.size});
+  ItemData.fromItem(Item item)
+      : id = item.id,
+        size = item.size;
 }
 
 enum ItemType { folder, file }
