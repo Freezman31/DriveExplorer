@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 const _folderType = "application/vnd.google-apps.folder";
 const _shortcutType = "application/vnd.google-apps.shortcut";
+const _scopes = [DriveApi.driveScope, 'email'];
 
 class GoogleDriveApiManager {
   final storage = const FlutterSecureStorage();
@@ -35,11 +36,13 @@ class GoogleDriveApiManager {
     return subfolders;
   }
 
-  Future saveCredentials(AccessToken token, String refreshToken) async {
+  Future saveCredentials(
+      AccessToken token, String refreshToken, String idToken) async {
     await storage.write(key: 'type', value: token.type);
     await storage.write(key: 'data', value: token.data);
     await storage.write(key: 'expiry', value: token.expiry.toString());
     await storage.write(key: 'refreshToken', value: refreshToken);
+    await storage.write(key: 'idToken', value: idToken);
   }
 
   Future deleteCredentials() async {
@@ -47,6 +50,7 @@ class GoogleDriveApiManager {
     await storage.delete(key: 'data');
     await storage.delete(key: 'expiry');
     await storage.delete(key: 'refreshToken');
+    await storage.delete(key: 'idToken');
   }
 
   Future<AccessCredentials?> getCredentials() async {
@@ -55,6 +59,7 @@ class GoogleDriveApiManager {
       "data": await storage.read(key: 'data'),
       "expiry": await storage.read(key: 'expiry'),
       "refreshToken": await storage.read(key: 'refreshToken'),
+      "idToken": await storage.read(key: 'idToken')
     };
     if (result['type'] == null) {
       return null;
@@ -66,7 +71,8 @@ class GoogleDriveApiManager {
         DateTime.parse(result['expiry']!),
       ),
       result['refreshToken']!,
-      [DriveApi.driveScope],
+      _scopes,
+      idToken: result['idToken'],
     );
   }
 
@@ -84,13 +90,12 @@ class GoogleDriveApiManager {
       env.get('GOOGLE_API_SECRET'),
     );
 
-    var authClient =
-        await clientViaUserConsent(id, [DriveApi.driveScope], (url) {
+    var authClient = await clientViaUserConsent(id, _scopes, (url) {
       //Open Url in Browser
       _launchAuthInBrowser(Uri.parse(url));
     });
     await saveCredentials(authClient.credentials.accessToken,
-        authClient.credentials.refreshToken!);
+        authClient.credentials.refreshToken!, authClient.credentials.idToken!);
     api = DriveApi(authClient);
   }
 
