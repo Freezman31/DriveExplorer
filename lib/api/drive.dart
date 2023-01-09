@@ -14,7 +14,7 @@ class GoogleDriveApiManager {
   late DriveApi api;
   late int storageUsed, storageTotal;
 
-  Future login() async {
+  Future<List<Item>> login() async {
     final credentials = await getCredentials();
     if (credentials == null) {
       await _loginWithBrowser();

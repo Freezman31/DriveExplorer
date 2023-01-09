@@ -1,4 +1,5 @@
 import 'package:backup_tool/api/drive.dart';
+import 'package:backup_tool/screens/explorer_screen.dart';
 import 'package:backup_tool/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -43,6 +44,13 @@ class BackupToolApp extends StatelessWidget {
                 fontFamily: 'Work Sans',
               )),
         ),
-        routes: const {});
+        routes: {
+          '/explorer': (context) => AnimatedCrossFade(
+                firstChild: Container(),
+                crossFadeState: CrossFadeState.showSecond,
+                duration: const Duration(milliseconds: 300),
+                secondChild: const ExplorerScreen(),
+              )
+        });
   }
 }

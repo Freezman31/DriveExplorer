@@ -1,8 +1,7 @@
 import 'package:backup_tool/api/drive.dart';
+import 'package:backup_tool/components/default_widget.dart';
 import 'package:backup_tool/components/info_card.dart';
-import 'package:backup_tool/components/sidebar.dart';
 import 'package:backup_tool/main.dart';
-import 'package:backup_tool/utils.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -13,65 +12,33 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  List<Item>? driveData;
+
+  @override
+  void initState() {
+    apiManager.login().then((value) => setState(() {
+          driveData = value;
+        }));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    return FutureBuilder(
-      future: apiManager.login(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-              body: Center(
-            child: CircularProgressIndicator(),
+    if (driveData == null) {
+      Future.delayed(const Duration(seconds: 1))
+          .then((value) => setState(() {}));
+      return const Scaffold(
+          body: Center(
+        child: CircularProgressIndicator(),
+      ));
+    } else {
+      return DefaultWidget(
+          selected: 0,
+          child: InfoCard(
+            driveItems: driveData!,
           ));
-        } else if (snapshot.hasError) {
-          return Scaffold(
-            body: Center(
-              child: Text(snapshot.error.toString()),
-            ),
-          );
-        } else {
-          final data = snapshot.data as List<Item>;
-          return Scaffold(
-            body: Row(
-              children: [
-                isWidthSmall(size)
-                    ? SizedBox(
-                        width: 75,
-                        height: size.height,
-                        child: const SideBar(isSmall: true),
-                      )
-                    : isWidthLarge(size)
-                        ? SizedBox(
-                            width: 350,
-                            height: size.height,
-                            child: const SideBar(isSmall: false),
-                          )
-                        : const Expanded(
-                            child: SideBar(
-                              isSmall: false,
-                            ),
-                          ),
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    color: theme.colorScheme.background,
-                    child: Column(
-                      children: [
-                        Expanded(
-                            child: InfoCard(
-                          driveItems: data,
-                        )),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-      },
-    );
+    }
   }
 }
