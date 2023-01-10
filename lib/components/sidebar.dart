@@ -1,5 +1,6 @@
 import 'package:backup_tool/components/sidebar_item.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SideBar extends StatelessWidget {
   const SideBar({super.key, required this.isSmall, required this.selected});
@@ -7,8 +8,8 @@ class SideBar extends StatelessWidget {
   final bool isSmall;
   final int selected;
   final List<SideBarItem> items = const [
-    SideBarItem(title: 'Home', icon: Icons.home_filled, route: '/'),
-    SideBarItem(title: 'Explorer', icon: Icons.folder, route: '/explorer'),
+    SideBarItem(title: 'Home', icon: Icons.home_filled, route: 'home'),
+    SideBarItem(title: 'Explorer', icon: Icons.folder, route: 'explorer'),
   ];
 
   @override
@@ -58,7 +59,7 @@ class SideBar extends StatelessWidget {
             ),
             selected: selected == index,
             onTap: () {
-              Navigator.pushNamed(context, items[index].route);
+              context.go('/${items[index].route}');
             },
           );
   }

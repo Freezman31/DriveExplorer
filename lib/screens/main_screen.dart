@@ -24,8 +24,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
     if (driveData == null) {
       Future.delayed(const Duration(seconds: 1))
           .then((value) => setState(() {}));
