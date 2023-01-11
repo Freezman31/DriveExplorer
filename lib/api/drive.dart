@@ -20,6 +20,10 @@ class GoogleDriveApiManager {
       await _loginWithBrowser();
     } else {
       final client = authenticatedClient(Client(), credentials);
+      saveCredentials(
+          client.credentials.accessToken,
+          client.credentials.refreshToken.toString(),
+          client.credentials.idToken.toString());
       api = DriveApi(client);
     }
 
