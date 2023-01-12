@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:googleapis/drive/v3.dart';
@@ -10,16 +12,19 @@ const _shortcutType = "application/vnd.google-apps.shortcut";
 const _scopes = [DriveApi.driveScope, 'email'];
 
 class GoogleDriveApiManager {
+  final env = DotEnv();
   final storage = const FlutterSecureStorage();
   late DriveApi api;
   late int storageUsed, storageTotal;
 
   Future<List<Item>> login() async {
+    await env.load(fileName: '.env');
     final credentials = await getCredentials();
     if (credentials == null) {
       await _loginWithBrowser();
     } else {
-      final client = authenticatedClient(Client(), credentials);
+      var newToken = await isTokenValid(credentials);
+      final client = authenticatedClient(Client(), newToken ?? credentials);
       saveCredentials(
           client.credentials.accessToken,
           client.credentials.refreshToken.toString(),
@@ -87,8 +92,6 @@ class GoogleDriveApiManager {
   }
 
   Future<void> _loginWithBrowser() async {
-    final env = DotEnv();
-    await env.load(fileName: '.env');
     final id = ClientId(
       env.get('GOOGLE_API_ID'),
       env.get('GOOGLE_API_SECRET'),
@@ -101,6 +104,37 @@ class GoogleDriveApiManager {
     await saveCredentials(authClient.credentials.accessToken,
         authClient.credentials.refreshToken!, authClient.credentials.idToken!);
     api = DriveApi(authClient);
+  }
+
+  Future<AccessCredentials?> isTokenValid(AccessCredentials credentials) async {
+    final resp = await get(Uri.parse(
+        'https://www.googleapis.com/oauth2/v2/tokeninfo?id_token=${credentials.idToken}'));
+    if (resp.statusCode == 400) {
+      final newToken = jsonDecode((await post(
+              Uri.parse('https://www.googleapis.com/oauth2/v4/token'),
+              body: {
+            "client_id": env.get('GOOGLE_API_ID'),
+            "client_secret": env.get('GOOGLE_API_SECRET'),
+            "refresh_token": credentials.refreshToken,
+            "grant_type": "refresh_token",
+          }))
+          .body);
+      saveCredentials(
+        AccessToken(
+          newToken['token_type'],
+          newToken['access_token'],
+          DateTime.now().add(
+            Duration(
+              seconds: newToken['expires_in'],
+            ),
+          ),
+        ),
+        credentials.refreshToken.toString(),
+        credentials.idToken.toString(),
+      );
+      return await getCredentials();
+    }
+    return null;
   }
 
   Future<List<Item>> getSubfolders(String folderId, String actualPath) async {
