@@ -123,11 +123,13 @@ class GoogleDriveApiManager {
         AccessToken(
           newToken['token_type'],
           newToken['access_token'],
-          DateTime.now().add(
-            Duration(
-              seconds: newToken['expires_in'],
-            ),
-          ),
+          DateTime.now()
+              .add(
+                Duration(
+                  seconds: newToken['expires_in'],
+                ),
+              )
+              .toUtc(),
         ),
         credentials.refreshToken.toString(),
         credentials.idToken.toString(),
