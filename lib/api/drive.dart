@@ -160,7 +160,7 @@ class GoogleDriveApiManager {
                     .map((e) => e.size)
                     .reduce((value, element) => value + element),
             subfolders: sub,
-            path: '$actualPath/${file.name!}',
+            path: '$actualPath/${file.id!}',
             type: ItemType.folder,
           ),
         );
@@ -175,7 +175,7 @@ class GoogleDriveApiManager {
           name: file.name!,
           size: int.parse(file.size!),
           subfolders: [],
-          path: '$actualPath/${file.name!}',
+          path: '$actualPath/${file.id!}',
           type: ItemType.file,
         ),
       );
