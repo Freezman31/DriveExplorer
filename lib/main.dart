@@ -77,17 +77,23 @@ class BackupToolApp extends StatelessWidget {
                   onSurface: Color(0xFFd5d0fd),
                 ),
                 textTheme: const TextTheme(
-                    titleLarge: TextStyle(
-                      fontSize: 50,
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'Work Sans',
-                      color: Color(0xFFFFFFFF),
-                    ),
-                    labelMedium: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Work Sans',
-                    )),
+                  titleLarge: TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: 'Work Sans',
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  labelMedium: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Work Sans',
+                  ),
+                  displaySmall: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Work Sans',
+                  ),
+                ),
               ),
             );
           } else if (snapshot.hasError) {

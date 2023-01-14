@@ -148,7 +148,7 @@ class GoogleDriveApiManager {
     );
     for (final file in files.files!) {
       if (file.mimeType == _folderType) {
-        final sub = await getSubfolders(file.id!, '$actualPath/${file.name}');
+        final sub = await getSubfolders(file.id!, '$actualPath/${file.id}');
         if (sub.isNotEmpty) ret.addAll(sub);
         ret.add(
           Item(
