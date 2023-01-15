@@ -10,8 +10,9 @@ class ItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(10),
         color: theme.colorScheme.surface,
       ),
       child: Container(

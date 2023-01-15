@@ -1,5 +1,6 @@
 import 'package:backup_tool/api/drive.dart';
 import 'package:backup_tool/components/default_widget.dart';
+import 'package:backup_tool/components/explorer_toolbar.dart';
 import 'package:backup_tool/components/item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -28,18 +29,27 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
       selected: 1,
       child: Container(
         margin: const EdgeInsets.all(8),
-        child: ListView.builder(
-          itemBuilder: (context, item) {
-            return ItemWidget(
-              onTap: changePath,
-              item: widget.driveItems
-                  .where((element) => p.dirname(element.path) == path)
-                  .toList()[item],
-            );
-          },
-          itemCount: widget.driveItems
-              .where((element) => p.dirname(element.path) == path)
-              .length,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 40,
+              child: ExplorerToolBar(
+                onTap: () => setState(() {
+                  path = p.dirname(path);
+                }),
+              ),
+            ),
+            Column(
+              children: [
+                for (final item in widget.driveItems)
+                  if (p.dirname(item.path) == path)
+                    ItemWidget(
+                      item: item,
+                      onTap: (i) => changePath(item.path),
+                    ),
+              ],
+            ),
+          ],
         ),
       ),
     );

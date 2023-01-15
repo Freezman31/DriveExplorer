@@ -1,14 +1,24 @@
 import 'package:backup_tool/api/drive.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class InfoCard extends StatelessWidget {
+class InfoCard extends StatefulWidget {
   final List<Item> driveItems;
   const InfoCard({super.key, required this.driveItems});
 
   @override
+  State<InfoCard> createState() => _InfoCardState();
+}
+
+class _InfoCardState extends State<InfoCard> {
+  String actualPath = '/';
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final source = widget.driveItems
+        .where((element) => p.dirname(element.path) == actualPath)
+        .toList();
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -19,23 +29,27 @@ class InfoCard extends StatelessWidget {
         children: [
           Expanded(
             child: SfCircularChart(
+              onSelectionChanged: (SelectionArgs args) {
+                final item = source[args.pointIndex];
+                if (item.type == ItemType.file) return;
+                setState(() {
+                  actualPath = item.path;
+                });
+              },
               series: [
-                DoughnutSeries<ItemData, String>(
-                  dataSource: driveItems
-                      .where((element) => element.type == ItemType.folder)
-                      .map((e) => ItemData.fromItem(e))
-                      .toList(),
-                  xValueMapper: (ItemData data, _) => data.id,
-                  yValueMapper: (ItemData data, _) => data.size,
-                  dataLabelMapper: (ItemData data, _) => driveItems
-                      .firstWhere((element) => element.id == data.id)
-                      .name,
-                  dataLabelSettings: const DataLabelSettings(
-                    isVisible: true,
-                    useSeriesColor: true,
-                    labelPosition: ChartDataLabelPosition.outside,
-                  ),
-                ),
+                DoughnutSeries<Item, String>(
+                    dataSource: source,
+                    xValueMapper: (Item data, _) => data.id,
+                    yValueMapper: (Item data, _) => data.size,
+                    dataLabelMapper: (Item data, _) => widget.driveItems
+                        .firstWhere((element) => element.id == data.id)
+                        .name,
+                    dataLabelSettings: const DataLabelSettings(
+                      isVisible: true,
+                      useSeriesColor: true,
+                      labelPosition: ChartDataLabelPosition.outside,
+                    ),
+                    selectionBehavior: SelectionBehavior(enable: true)),
               ],
             ),
           )

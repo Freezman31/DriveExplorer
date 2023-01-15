@@ -173,7 +173,7 @@ class GoogleDriveApiManager {
         Item(
           id: file.id!,
           name: file.name!,
-          size: int.parse(file.size!),
+          size: int.parse(file.size ?? '0'),
           subfolders: [],
           path: '$actualPath/${file.id!}',
           type: ItemType.file,
@@ -210,15 +210,6 @@ class Item {
   String toString() {
     return 'Item(id: $id, name: $name, size: $size, path: $path, type: $type, subfolders: $subfolders)';
   }
-}
-
-class ItemData {
-  final String id;
-  final int size;
-  ItemData({required this.id, required this.size});
-  ItemData.fromItem(Item item)
-      : id = item.id,
-        size = item.size;
 }
 
 enum ItemType { folder, file }
