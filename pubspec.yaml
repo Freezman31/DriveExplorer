@@ -1,5 +1,5 @@
-name: backup_tool
-description: The app part of the BackupTool project made with Flutter and Rust
+name: drive_explorer
+description: Yet another google drive explorer
 publish_to: 'none' 
 
 version: 0.0.1+1

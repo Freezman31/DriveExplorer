@@ -1,6 +1,6 @@
-import 'package:backup_tool/api/drive.dart';
-import 'package:backup_tool/screens/explorer_screen.dart';
-import 'package:backup_tool/screens/main_screen.dart';
+import 'package:drive_explorer/api/drive.dart';
+import 'package:drive_explorer/screens/explorer_screen.dart';
+import 'package:drive_explorer/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

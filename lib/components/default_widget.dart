@@ -1,5 +1,5 @@
-import 'package:backup_tool/components/sidebar.dart';
-import 'package:backup_tool/utils.dart';
+import 'package:drive_explorer/components/sidebar.dart';
+import 'package:drive_explorer/utils.dart';
 import 'package:flutter/material.dart';
 
 class DefaultWidget extends StatelessWidget {

@@ -1,6 +1,6 @@
-import 'package:backup_tool/api/drive.dart';
-import 'package:backup_tool/components/default_widget.dart';
-import 'package:backup_tool/components/info_card.dart';
+import 'package:drive_explorer/api/drive.dart';
+import 'package:drive_explorer/components/default_widget.dart';
+import 'package:drive_explorer/components/info_card.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -12,14 +12,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-
   @override
   Widget build(BuildContext context) {
-    
-      return DefaultWidget(
-          selected: 0,
-          child: InfoCard(
-            driveItems: widget.driveData,
-          ));
+    return DefaultWidget(
+        selected: 0,
+        child: InfoCard(
+          driveItems: widget.driveData,
+        ));
   }
 }

@@ -1,7 +1,7 @@
-import 'package:backup_tool/api/drive.dart';
-import 'package:backup_tool/components/default_widget.dart';
-import 'package:backup_tool/components/explorer_toolbar.dart';
-import 'package:backup_tool/components/item_widget.dart';
+import 'package:drive_explorer/api/drive.dart';
+import 'package:drive_explorer/components/default_widget.dart';
+import 'package:drive_explorer/components/explorer_toolbar.dart';
+import 'package:drive_explorer/components/item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
