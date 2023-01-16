@@ -25,9 +25,20 @@ class _InfoCardState extends State<InfoCard> {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(32),
       ),
-      child: Row(
+      child: Column(
         children: [
           Expanded(
+            child: InkWell(
+              child: const Icon(Icons.arrow_back),
+              onTap: () {
+                setState(() {
+                  actualPath = p.dirname(actualPath);
+                });
+              },
+            ),
+          ),
+          Expanded(
+            flex: 15,
             child: SfCircularChart(
               onSelectionChanged: (SelectionArgs args) {
                 final item = source[args.pointIndex];
