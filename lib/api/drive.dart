@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:download/download.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:googleapis/drive/v3.dart';
@@ -181,6 +182,13 @@ class GoogleDriveApiManager {
       );
     }
     return ret;
+  }
+
+  Future<void> downloadFile(Item it) async {
+    Media response = await api.files
+        .get(it.id, downloadOptions: DownloadOptions.fullMedia) as Media;
+    final stream = response.stream;
+    download(stream as Stream<int>, it.name);
   }
 
   Future<String> getFileName({required String fileId}) async {
