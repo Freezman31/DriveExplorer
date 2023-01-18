@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:io' as io;
 
-import 'package:download/download.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const _folderType = "application/vnd.google-apps.folder";
@@ -187,8 +188,17 @@ class GoogleDriveApiManager {
   Future<void> downloadFile(Item it) async {
     Media response = await api.files
         .get(it.id, downloadOptions: DownloadOptions.fullMedia) as Media;
-    final stream = response.stream;
-    download(stream as Stream<int>, it.name);
+    List<int> dataStore = [];
+    response.stream.listen((data) {
+      dataStore.insertAll(dataStore.length, data);
+    }, onDone: () async {
+      io.Directory downloadDir = (await getDownloadsDirectory())!;
+      String downloadPath = downloadDir.path;
+      io.File file = io.File('$downloadPath/${it.name}');
+      await file.writeAsBytes(dataStore);
+    }, onError: (error) {
+      print("Some Error");
+    });
   }
 
   Future<String> getFileName({required String fileId}) async {

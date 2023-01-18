@@ -1,4 +1,5 @@
 import 'package:drive_explorer/api/drive.dart';
+import 'package:drive_explorer/main.dart';
 import 'package:flutter/material.dart';
 
 class ItemWidget extends StatelessWidget {
@@ -32,6 +33,12 @@ class ItemWidget extends StatelessWidget {
                 item.name,
                 style: theme.textTheme.displaySmall,
               ),
+              InkWell(
+                child: const Icon(Icons.download),
+                onTap: () {
+                  apiManager.downloadFile(item);
+                },
+              )
             ],
           ),
         ),
