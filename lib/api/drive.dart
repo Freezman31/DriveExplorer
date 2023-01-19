@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 const _folderType = "application/vnd.google-apps.folder";
 const _shortcutType = "application/vnd.google-apps.shortcut";
+const _documentType = "application/vnd.google-apps.document";
 const _scopes = [DriveApi.driveScope, 'email'];
 
 class GoogleDriveApiManager {
@@ -164,6 +165,7 @@ class GoogleDriveApiManager {
             subfolders: sub,
             path: '$actualPath/${file.id!}',
             type: ItemType.folder,
+            mimeType: file.mimeType!,
           ),
         );
         continue;
@@ -179,6 +181,7 @@ class GoogleDriveApiManager {
           subfolders: [],
           path: '$actualPath/${file.id!}',
           type: ItemType.file,
+          mimeType: file.mimeType!,
         ),
       );
     }
@@ -186,19 +189,26 @@ class GoogleDriveApiManager {
   }
 
   Future<void> downloadFile(Item it) async {
-    Media response = await api.files
-        .get(it.id, downloadOptions: DownloadOptions.fullMedia) as Media;
-    List<int> dataStore = [];
-    response.stream.listen((data) {
-      dataStore.insertAll(dataStore.length, data);
-    }, onDone: () async {
-      io.Directory downloadDir = (await getDownloadsDirectory())!;
-      String downloadPath = downloadDir.path;
-      io.File file = io.File('$downloadPath/${it.name}');
-      await file.writeAsBytes(dataStore);
-    }, onError: (error) {
-      print("Some Error");
-    });
+    if (it.mimeType == _documentType) {
+    } else {
+      Media response = it.mimeType == _documentType
+          ? await api.files
+              .get(it.id, downloadOptions: DownloadOptions.fullMedia) as Media
+          : await api.files.export(it.id, "application/pdf",
+              downloadOptions: DownloadOptions.fullMedia) as Media;
+      List<int> dataStore = [];
+      response.stream.listen((data) {
+        dataStore.insertAll(dataStore.length, data);
+      }, onDone: () async {
+        io.Directory downloadDir = (await getDownloadsDirectory())!;
+        String downloadPath = downloadDir.path;
+        io.File file = io.File(
+            '$downloadPath/${it.name}${it.mimeType == _documentType ? ".pdf" : ""}');
+        await file.writeAsBytes(dataStore);
+      }, onError: (error) {
+        print("Some Error");
+      });
+    }
   }
 
   Future<String> getFileName({required String fileId}) async {
@@ -215,6 +225,7 @@ class Item {
   final String path;
   final ItemType type;
   final List<Item> subfolders;
+  final String mimeType;
 
   Item(
       {required this.id,
@@ -222,11 +233,12 @@ class Item {
       required this.size,
       required this.subfolders,
       required this.path,
-      required this.type});
+      required this.type,
+      required this.mimeType});
 
   @override
   String toString() {
-    return 'Item(id: $id, name: $name, size: $size, path: $path, type: $type, subfolders: $subfolders)';
+    return 'Item(id: $id, name: $name, size: $size, path: $path, type: $type, subfolders: $subfolders, mimeType: $mimeType)';
   }
 }
 
