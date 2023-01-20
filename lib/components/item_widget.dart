@@ -33,12 +33,15 @@ class ItemWidget extends StatelessWidget {
                 item.name,
                 style: theme.textTheme.displaySmall,
               ),
-              InkWell(
-                child: const Icon(Icons.download),
-                onTap: () {
-                  apiManager.downloadFile(item);
-                },
-              )
+              const Spacer(),
+              item.type == ItemType.file
+                  ? InkWell(
+                      child: const Icon(Icons.download),
+                      onTap: () {
+                        apiManager.downloadFile(item);
+                      },
+                    )
+                  : Container()
             ],
           ),
         ),
