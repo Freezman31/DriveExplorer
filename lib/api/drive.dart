@@ -8,6 +8,7 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path/path.dart' as p;
 
 const _folderType = "application/vnd.google-apps.folder";
 const _shortcutType = "application/vnd.google-apps.shortcut";
@@ -221,6 +222,20 @@ class GoogleDriveApiManager {
     final file = (await api.files.get(fileId,
         $fields: '*', downloadOptions: DownloadOptions.metadata)) as File;
     return file.name!;
+  }
+
+  Future<void> uploadFile({required io.File f}) async {
+    print('Uploading file: ${f.path}');
+    File gF = File();
+    try {
+      gF.name = f.path.split(p.separator).last;
+      File response = await api.files
+          .create(gF, uploadMedia: Media(f.openRead(), f.lengthSync()));
+
+      print('Uploaded file: ${response.name}');
+    } catch (e) {
+      print("An error occurred: $e");
+    }
   }
 }
 
