@@ -6,9 +6,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:path/path.dart' as p;
 
 const _folderType = "application/vnd.google-apps.folder";
 const _shortcutType = "application/vnd.google-apps.shortcut";
@@ -199,7 +199,9 @@ class GoogleDriveApiManager {
     Media response = (it.mimeType != _documentType &&
             it.mimeType != _shortcutType &&
             it.mimeType != _folderType &&
-            it.mimeType != _spreadsheetType)
+            it.mimeType != _spreadsheetType &&
+            it.mimeType != _presentationType &&
+            it.mimeType != _formType)
         ? await api.files.get(it.id, downloadOptions: DownloadOptions.fullMedia)
             as Media
         : await api.files.export(it.id, "application/pdf",
@@ -233,6 +235,15 @@ class GoogleDriveApiManager {
           .create(gF, uploadMedia: Media(f.openRead(), f.lengthSync()));
 
       print('Uploaded file: ${response.name}');
+    } catch (e) {
+      print("An error occurred: $e");
+    }
+  }
+
+  Future<void> deleteFile({required String fileId}) async {
+    try {
+      await api.files.delete(fileId);
+      print('Deleted file: $fileId');
     } catch (e) {
       print("An error occurred: $e");
     }

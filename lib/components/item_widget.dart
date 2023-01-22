@@ -41,7 +41,13 @@ class ItemWidget extends StatelessWidget {
                         apiManager.downloadFile(item);
                       },
                     )
-                  : Container()
+                  : Container(),
+              InkWell(
+                child: const Icon(Icons.delete),
+                onTap: () {
+                  apiManager.deleteFile(fileId: item.id);
+                },
+              )
             ],
           ),
         ),
