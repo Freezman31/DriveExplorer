@@ -248,6 +248,18 @@ class GoogleDriveApiManager {
       print("An error occurred: $e");
     }
   }
+
+  Future<void> createFolder({required String folderName}) async {
+    try {
+      File gF = File();
+      gF.name = folderName;
+      gF.mimeType = _folderType;
+      File response = await api.files.create(gF);
+      print('Created folder: ${response.name}');
+    } catch (e) {
+      print("An error occurred: $e");
+    }
+  }
 }
 
 class Item {

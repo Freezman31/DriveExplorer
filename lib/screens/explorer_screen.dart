@@ -54,8 +54,11 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
                 SizedBox(
                   height: 40,
                   child: ExplorerToolBar(
-                    onTap: () => setState(() {
+                    onTapBack: () => setState(() {
                       path = p.dirname(path);
+                    }),
+                    onTapFolder: () => setState(() {
+                      apiManager.createFolder(folderName: "New Folder");
                     }),
                   ),
                 ),
